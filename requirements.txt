@@ -1,0 +1,6 @@
+pillow
+flask
+flask_restful
+pandas
+requests
+BeautifulSoup4

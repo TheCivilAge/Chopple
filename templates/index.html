@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{url_for('static', filename='stylesheets/style.css')}}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+    <title>Chopple</title>
+    <!--accessability-->
+  </head>
+  <body>
+    <div class="container">
+      <nav>
+        <a href="{{url_for('index')}}" class="Home">Chopple</a>
+        <a href="{{url_for('howToPlay')}}" class="Nav btn"> How to play</a>
+        <a href="{{url_for('previousDays')}}" class="Nav btn">Previous Days</a>
+      </nav>
+      <div class="gameArea">
+        <!-- {% if data['lives'] <= 1 %}
+        <div class="hintContainer">
+          <img src="/hint.png" alt="cropped image of correct character" />
+        </div>
+        {% endif %} -->
+
+        <div class="searchArea">
+          <form class="searchbar" action="{{url_for('index')}}" method="POST">
+            <label>Enter character name:</label>
+            <input
+              name="Guess"
+              id="searchbar"
+              type="text"
+              placeholder="Tony Chopper"
+            />
+            <input class="submit btn" type="submit" value="Submit" />
+            <script>
+              $( function() {
+
+                var availableTags = [
+                    {% for character in characterNames %}
+                      "{{character}}",
+                    {% endfor %}
+
+                ];
+                $( "#searchbar" ).autocomplete({
+                  source: availableTags
+                });
+              } );
+            </script>
+          </form>
+          <div class="livesCounter">
+            <p>Lives:</p>
+            {% for i in range(0,6) %} {% if data["lives"]-i >= 0 %}
+            <div class="heart">
+              <span class="material-symbols-outlined red"> favorite </span>
+            </div>
+            {% else %}
+            <div class="heart">
+              <span class="material-symbols-outlined"> favorite </span>
+            </div>
+            {% endif %} {% endfor %}
+          </div>
+        </div>
+        <div class="errorMsgContainer">
+          <p>{{data["errorMsg"]}}</p>
+        </div>
+        <div class="guessArea">
+          {% if data["guesses"] !=[] %}
+          <table class="guessTable">
+            <tr>
+              <th>Name</th>
+              <th>Picture</th>
+              <th>Saga</th>
+              <th>Affiliation</th>
+            </tr>
+            {% for character in data["guesses"] %}
+            <tr>
+              {% set currCharacter= character.Name %} {% if
+              data['values'][currCharacter][0]==False %}
+              <td>
+                {{character.Name}}
+                <span class="material-symbols-outlined"> arrow_upward </span>
+              </td>
+              {% else %}
+              <td>
+                {{character.Name}}
+                <span class="material-symbols-outlined"> arrow_downward </span>
+              </td>
+              {% endif %}
+              <td>
+                <img
+                  class="characterPhoto"
+                  src="{{character.Pic}}"
+                  alt="picture of {{character.Name}}"
+                />
+              </td>
+              {% if data['values'][currCharacter][1]==False %}
+              <td style="background-color: red">{{character.Saga}}</td>
+              {% else %}
+              <td style="background-color: green">{{character.Saga}}</td>
+              {% endif %} {% if data['values'][currCharacter][2]==False %}
+              <td style="background-color: red">{{character.Affiliation}}</td>
+              {% else %}
+              <td style="background-color: green">{{character.Affiliation}}</td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </table>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% if data["gameCondition"]==1 %}
+    <div class="modal-window">
+      <div id="popup">
+        <header>
+          <div class="form-close">
+            <form action="{{url_for('index')}}" method="GET">
+              <input
+                class="form-close-btn"
+                name="close"
+                type="submit"
+                value="close"
+              />
+            </form>
+          </div>
+          <h2>You Win!</h2>
+        </header>
+        <section>
+          <img
+            src="{{data['correctCharacter'].Pic}}"
+            alt="{{data['correctCharacter'].Name}}"
+          />
+          <p>You took {{ data['numGuesses'] }} guesses</p>
+        </section>
+        <footer>
+          <a href="{{url_for('previousDays')}}">Play some more?</a>
+        </footer>
+      </div>
+    </div>
+    {% endif %} {% if data["gameCondition"]==-1 %}
+    <div class="modal-window">
+      <div id="popup">
+        <header>
+          <div class="form-close">
+            <form action="{{url_for('index')}}" method="GET">
+              <input
+                class="form-close-btn"
+                name="close"
+                type="submit"
+                value="close"
+              />
+            </form>
+          </div>
+          <h2>You Lose!</h2>
+        </header>
+        <section>
+          <p>Correct answer was {{data['correctCharacter'].Name}}</p>
+          <p>First appearence {{data['correctCharacter'].Saga}}</p>
+          <p>Affiliation {{data['correctCharacter'].Affiliation}}</p>
+
+          <img
+            src="{{data['correctChaarcter'].Pic}}"
+            alt="{{data['correctCharacter'].Name}}"
+          />
+          <p>Guessed in {{data['numGuesses']}} guesses</p>
+        </section>
+        <footer>
+          <a href="{{url_for('index')}}">Play some more?</a>
+        </footer>
+      </div>
+    </div>
+    {% endif %}
+    <footer>
+      <p>
+        Data sourced from
+        <a href="https://onepiece.fandom.com/wiki/One_Piece_Wiki">
+          One Piece Fandom Wiki/</a
+        >
+      </p>
+      <p>
+        Note: Pictures of characters are not showing because the
+        "onepiece.fandom.com/wiki/" 's server with the images is dynamically
+        replacing them ( I don't have permission to use them)
+      </p>
+    </footer>
+    <script
+      type="text/javascript"
+      src="{{url_for('static', filename='script.js')}}"
+    >
+      var characterNames ={{characterNames|tojson|safe}}
+    </script>
+  </body>
+</html>
