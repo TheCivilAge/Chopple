@@ -1,18 +1,1 @@
-python venv
 
-Set-ExecutionPolicy Unrestricted -Scope Process
-(for new powershell terminals)
-
-python -m venv venv
-
-venv\Scripts\activate
-
-To Run:
-pip install -r requirements.txt
-flask --app App run --debug
-
-or
-
-python -m flask run
-
-use --user command to install this if there is an OS error
