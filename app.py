@@ -113,8 +113,8 @@ data=initialize()
 @app.route("/", methods=['GET','POST'])
 def index():
     if(request.method=='GET'):
+        # Stops unboundlocal variable error
         global data
-        # Stops unboundlocal varibale error
         data['characterNames']
         newdata=initialize()
         data=newdata.copy()
